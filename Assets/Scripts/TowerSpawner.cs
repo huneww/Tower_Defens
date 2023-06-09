@@ -8,9 +8,22 @@ public class TowerSpawner : MonoBehaviour
     private GameObject towerPrefab;
     [SerializeField]
     private EnemySpawner enemySpawner;
+    // 타워 건설 비용
+    [SerializeField]
+    private int towerBuildGold = 50;
+    // 타워 건설 시 골드 감소
+    [SerializeField]
+    private PlayerGold playerGold;
 
     public void SpawnTower(Transform tileTransform)
     {
+        // 타워 건설 가능 여부 확인
+        // 타워 건설할 만큼 돈이 없으면 타워 건설 X
+        if (towerBuildGold > playerGold.CurrentGold)
+        {
+            return;
+        }
+
         Tile tile = tileTransform.GetComponent<Tile>();
 
         // 타워 건설 가능 여부 확인
@@ -22,6 +35,8 @@ public class TowerSpawner : MonoBehaviour
 
         // 현재 타일의 위치에 타워가 건설되어 있지 안다면
         tile.isBuildTower = true;
+        // 타워 건설에 필요한 골드만큼 감소
+        playerGold.CurrentGold -= towerBuildGold;
         // 선택한 타일의 위치에 타워 소환
         GameObject clone = Instantiate(towerPrefab, tileTransform.position, Quaternion.identity);
         clone.GetComponent<TowerWeapon>().Setup(enemySpawner);

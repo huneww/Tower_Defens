@@ -36,7 +36,7 @@ public class EnemySpawner : MonoBehaviour
             // 생성된 적의 Enemy 컴포넌트
             Enemy enemy = clone.GetComponent<Enemy>();
             // wayPoints 정보를 매개변수로 SetUp메서드 호출
-            enemy.Setup(wayPoints);
+            enemy.Setup(this, wayPoints);
             // 리스트에 생성된 적 정보 저장
             enemyList.Add(enemy);
             // spawnTime 시간 동안 대기

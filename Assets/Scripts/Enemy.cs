@@ -12,10 +12,13 @@ public class Enemy : MonoBehaviour
     private int currentIndex;
     // 오브젝트 이동 제어
     private MoveMent moveMent;
+    // 적의 삭제를 본인이 하지 않고 EnemySpawner에 알려서 삭제
+    private EnemySpawner enemySpawner;
 
-    public void Setup(Transform[] wayPoints)
+    public void Setup(EnemySpawner enemySpawner, Transform[] wayPoints)
     {
         moveMent = GetComponent<MoveMent>();
+        this.enemySpawner = enemySpawner;
 
         // 적 이동 경로 WayPoints 정보 설정
         wayPointCount = wayPoints.Length;
@@ -66,7 +69,15 @@ public class Enemy : MonoBehaviour
         // 현재 위치가  마지막 wayPoints라면
         else
         {
-            Destroy(gameObject);
+            // 적 오브젝트 삭제
+            OnDie();
         }
+    }
+
+    public void OnDie()
+    {
+        // EnemySpawner에서 리스트로 적 정보를 관리하기 때문에 Destroy()를 직접하지 않고
+        // EnemySpawner에게 본인이 삭제될 때 필요한 처리를 하도록 DestroyEnemy() 메서드 호출
+        enemySpawner.DestroyEnemy(this);
     }
 }

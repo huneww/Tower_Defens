@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 2542269161392585044}
   - component: {fileID: 2542269161392585045}
   - component: {fileID: 2542269161392585049}
+  - component: {fileID: 1838212016856908287}
   m_Layer: 0
-  m_Name: Projecttile
+  m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,3 +139,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   moveDirection: {x: 0, y: 0, z: 0}
+--- !u!114 &1838212016856908287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2542269161392585046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 546ff3d64bc50a947b86943107b0a133, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

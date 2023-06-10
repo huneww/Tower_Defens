@@ -6,21 +6,15 @@ public enum WeaponState { SerachTarget = 0, AttackTarget}
 
 public class TowerWeapon : MonoBehaviour
 {
+    // 타워정보
+    [SerializeField]
+    private TowerTemplate towerTemplate;
     // 발사체 프리펩
     [SerializeField]
     private GameObject projectilePrefab;
     // 발사체 생성 위치
     [SerializeField]
     private Transform spawnPoint;
-    // 공격 속도
-    [SerializeField]
-    private float attackRate = 0.5f;
-    // 공격 범위
-    [SerializeField]
-    private float attackRange = 2.0f;
-    // 공격력
-    [SerializeField]
-    private int attackDamage = 1;
     // 타워 레벨
     private int level = 0;
     // 타워 무기 상태
@@ -29,16 +23,26 @@ public class TowerWeapon : MonoBehaviour
     private Transform attackTarget = null;
     // 게임에 존재하는 적 정보 획득
     private EnemySpawner enemySpawner;
+    // 타워 오브젝트 이미지 변경
+    private SpriteRenderer spriteRenderer;
+    // 플레이어 골드 정보 획득 및 설정
+    private PlayerGold playerGold;
+    // 현재 타워가 배치되어 있는 타일
+    private Tile ownerTile;
 
-    public float Damage => attackDamage;
-    public float Rate => attackRate;
-    public float Range => attackRange;
+    public float Damage => towerTemplate.weapon[level].damage;
+    public float Rate => towerTemplate.weapon[level].rate;
+    public float Range => towerTemplate.weapon[level].range;
     public int Level => level;
+    public int MaxLevel => towerTemplate.weapon.Length;
+    public SpriteRenderer TowerSprite => spriteRenderer;
 
-    public void Setup(EnemySpawner enemySpawner)
+    public void Setup(EnemySpawner enemySpawner, PlayerGold playerGold, Tile tile)
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        this.playerGold = playerGold;
         this.enemySpawner = enemySpawner;
-
+        this.ownerTile = tile;
         // 최초 상태를 WeaponState.SerachTarget으로 설정
         ChangeState(WeaponState.SerachTarget);
     }
@@ -85,7 +89,7 @@ public class TowerWeapon : MonoBehaviour
             {
                 float distance = Vector3.Distance(enemySpawner.EnemyList[i].transform.position, transform.position);
                 // 현재 검사중인 적과 거리가 공격범위 내에 있고, 현재까지 검사한 적보다 거리가 가까우면
-                if (distance <= attackRange && distance <= closesDisSqr)
+                if (distance <= towerTemplate.weapon[level].range && distance <= closesDisSqr)
                 {
                     closesDisSqr = distance;
                     attackTarget = enemySpawner.EnemyList[i].transform;
@@ -114,7 +118,7 @@ public class TowerWeapon : MonoBehaviour
 
             // target이 공격 범위 안에 있는지 검사 (공격 범위를 벗어나면 새로운 적 탐색)
             float distance = Vector3.Distance(attackTarget.position, transform.position);
-            if (distance > attackRange)
+            if (distance > towerTemplate.weapon[level].range)
             {
                 attackTarget = null;
                 ChangeState(WeaponState.SerachTarget);
@@ -122,7 +126,7 @@ public class TowerWeapon : MonoBehaviour
             }
 
             // attackRate 만큼 대기
-            yield return new WaitForSeconds(attackRate);
+            yield return new WaitForSeconds(towerTemplate.weapon[level].rate);
 
             // 공격
             SpawnProjectile();
@@ -132,6 +136,34 @@ public class TowerWeapon : MonoBehaviour
     private void SpawnProjectile()
     {
         GameObject clone = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
-        clone.GetComponent<Projectile>().Setup(attackTarget, attackDamage);
+        clone.GetComponent<Projectile>().Setup(attackTarget, towerTemplate.weapon[level].damage);
+    }
+
+    public bool Upgrade()
+    {
+        // 타워 업그레이드에 필요한 골드가 충분한지 검사
+        if (playerGold.CurrentGold < towerTemplate.weapon[level + 1].cost)
+        {
+            return false;
+        }
+
+        // 타워 레벨 증가
+        level++;
+        // 타워 외형 변경
+        spriteRenderer.sprite = towerTemplate.weapon[level].sprite;
+        // 골드 차감
+        playerGold.CurrentGold -= towerTemplate.weapon[level].cost;
+
+        return true;
+    }
+
+    public void Sell()
+    {
+        // 골드 증가
+        playerGold.CurrentGold += towerTemplate.weapon[level].sell;
+        // 현재 타일에 다시 타워 건설이 가능하도록 설정
+        ownerTile.isBuildTower = false;
+        // 타워 파괴
+        Destroy(gameObject);
     }
 }

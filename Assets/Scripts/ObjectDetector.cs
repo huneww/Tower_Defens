@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ObjectDetector : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class ObjectDetector : MonoBehaviour
     private Camera mainCamer;
     private Ray ray;
     private RaycastHit hit;
+    // 마우스로 피킹한 변수 임시 저장
+    private Transform hitTransform = null;
 
     private void Awake()
     {
@@ -20,6 +23,11 @@ public class ObjectDetector : MonoBehaviour
 
     private void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject() == true)
+        {
+            return;
+        }
+
         // 마우스 왼쪽 버튼을 눌렀을 때
         if (Input.GetMouseButtonDown(0))
         {
@@ -32,6 +40,8 @@ public class ObjectDetector : MonoBehaviour
             // 광선에 부딪히는 오브젝트를 검출해서 hit에 저장
             if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
+                hitTransform = hit.transform;
+
                 // 광선에 부딪힌 오브젝트의 태그가 "Tile"이면
                 if (hit.transform.CompareTag("Tile"))
                 {
@@ -44,6 +54,17 @@ public class ObjectDetector : MonoBehaviour
                     towerDateViewer.OnPanel(hit.transform);
                 }
             }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            // 마우스를 눌렀을때 선택한 오브젝트가 없거나 선택한 오브젝트가 타워가 아니면
+            if (hitTransform == null || hitTransform.CompareTag("Tower") == false)
+            {
+                // 타워 정보 패널 비활성화
+                towerDateViewer.OffPanel();
+            }
+
+            hitTransform = null;
         }
     }
 }

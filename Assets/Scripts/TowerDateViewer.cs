@@ -17,6 +17,10 @@ public class TowerDateViewer : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI textLevel;
     [SerializeField]
+    private TextMeshProUGUI textUpgradeCost;
+    [SerializeField]
+    private TextMeshProUGUI textSellCost;
+    [SerializeField]
     private TowerAttackRange towerAttackRange;
     [SerializeField]
     private Button buttonUpgrade;
@@ -61,11 +65,31 @@ public class TowerDateViewer : MonoBehaviour
 
     private void UpdateTowerDate()
     {
+        if (currentTower.WeaponType == WeaponType.Cannon || currentTower.WeaponType == WeaponType.Laser)
+        {
+            imageTower.rectTransform.sizeDelta = new Vector2(88, 59);
+            textDamage.text = "Damage : " + currentTower.Damage + "+" + "<color=red>" + currentTower.AddedDamage.ToString("F1") + "</color>";
+        }
+        else
+        {
+            imageTower.rectTransform.sizeDelta = new Vector2(59, 59);
+
+            if (currentTower.WeaponType == WeaponType.Slow)
+            {
+                textDamage.text = "Slow : " + currentTower.Slow * 100 + "%";
+            }
+            else if (currentTower.WeaponType == WeaponType.Buff)
+            {
+                textDamage.text = "Buff : " + currentTower.Buff * 100 + "%"; 
+            }
+        }
+
         imageTower.sprite = currentTower.TowerSprite.sprite;
-        textDamage.text = "Damage : " + currentTower.Damage;
         textRate.text = "Rate : " + currentTower.Rate;
         textRange.text = "Range : " + currentTower.Range;
         textLevel.text = "Level : " + currentTower.Level;
+        textUpgradeCost.text = currentTower.UpgradeCost.ToString();
+        textSellCost.text = currentTower.SellCost.ToString();
 
         // 업그레이드 불가능해지면 버튼 비활성화
         buttonUpgrade.interactable = currentTower.Level < currentTower.MaxLevel - 1 ? true : false;

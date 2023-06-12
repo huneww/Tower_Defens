@@ -23,6 +23,7 @@ public class ObjectDetector : MonoBehaviour
 
     private void Update()
     {
+        // 마우스가 UI에 머물러 있을 때는 아래 코드가 실행되지 않도록 함
         if (EventSystem.current.IsPointerOverGameObject() == true)
         {
             return;
@@ -55,7 +56,7 @@ public class ObjectDetector : MonoBehaviour
                 }
             }
         }
-        else if (Input.GetMouseButtonDown(0))
+        else if (Input.GetMouseButtonUp(0))
         {
             // 마우스를 눌렀을때 선택한 오브젝트가 없거나 선택한 오브젝트가 타워가 아니면
             if (hitTransform == null || hitTransform.CompareTag("Tower") == false)

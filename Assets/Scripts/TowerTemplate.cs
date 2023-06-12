@@ -19,6 +19,10 @@ public class TowerTemplate : ScriptableObject
         public Sprite sprite;
         // 공격력
         public float damage;
+        // 감속 퍼센트 (0.2 = 20%)
+        public float slow;
+        // 공격력 증가율 (0.2 = 20%)
+        public float buff;
         // 발사 속도
         public float rate;
         // 발사 범위
